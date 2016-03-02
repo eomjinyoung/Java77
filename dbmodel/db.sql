@@ -1,0 +1,391 @@
+-- 수강신청
+DROP TABLE IF EXISTS COUR_SIGN RESTRICT;
+
+-- 교육과정
+DROP TABLE IF EXISTS COURSES RESTRICT;
+
+-- 매니저
+DROP TABLE IF EXISTS MANAGERS RESTRICT;
+
+-- 학생
+DROP TABLE IF EXISTS STUDENTS RESTRICT;
+
+-- 강사
+DROP TABLE IF EXISTS TEACHERS RESTRICT;
+
+-- 강의과목
+DROP TABLE IF EXISTS SUBJECTS RESTRICT;
+
+-- 학생사진
+DROP TABLE IF EXISTS STU_PHOT RESTRICT;
+
+-- 강사강의과목
+DROP TABLE IF EXISTS TEACH_SUB RESTRICT;
+
+-- 과정투입강사
+DROP TABLE IF EXISTS COUR_TEACH RESTRICT;
+
+-- 주소
+DROP TABLE IF EXISTS ADDRS RESTRICT;
+
+-- 강의실
+DROP TABLE IF EXISTS CLASSES RESTRICT;
+
+-- 강의실사진
+DROP TABLE IF EXISTS CLAS_PHOT RESTRICT;
+
+-- 수강신청
+CREATE TABLE COUR_SIGN (
+	SUNO  INTEGER  NOT NULL COMMENT '수강신청번호', -- 수강신청번호
+	CNO   INTEGER  NOT NULL COMMENT '교육과정번호', -- 교육과정번호
+	SNO   INTEGER  NOT NULL COMMENT '학생번호', -- 학생번호
+	CDATE DATETIME NOT NULL COMMENT '신청일', -- 신청일
+	STAT  INTEGER  NULL     COMMENT '상태' -- 상태
+)
+COMMENT '수강신청';
+
+-- 수강신청
+ALTER TABLE COUR_SIGN
+	ADD CONSTRAINT PK_COUR_SIGN -- 수강신청 기본키
+		PRIMARY KEY (
+			SUNO -- 수강신청번호
+		);
+
+-- 수강신청 유니크 인덱스
+CREATE UNIQUE INDEX UIX_COUR_SIGN
+	ON COUR_SIGN ( -- 수강신청
+		CNO ASC, -- 교육과정번호
+		SNO ASC  -- 학생번호
+	);
+
+-- 교육과정
+CREATE TABLE COURSES (
+	CNO   INTEGER      NOT NULL COMMENT '교육과정번호', -- 교육과정번호
+	TITLE VARCHAR(255) NOT NULL COMMENT '교육과정명', -- 교육과정명
+	CONT  TEXT         NOT NULL COMMENT '내용', -- 내용
+	SDATE DATE         NOT NULL COMMENT '시작일', -- 시작일
+	EDATE DATE         NOT NULL COMMENT '종료일', -- 종료일
+	HOURS INTEGER      NOT NULL COMMENT '강의시간', -- 강의시간
+	MNO   INTEGER      NULL     COMMENT '매니저번호', -- 매니저번호
+	CLNO  INTEGER      NULL     COMMENT '강의실번호' -- 강의실번호
+)
+COMMENT '교육과정';
+
+-- 교육과정
+ALTER TABLE COURSES
+	ADD CONSTRAINT PK_COURSES -- 교육과정 기본키
+		PRIMARY KEY (
+			CNO -- 교육과정번호
+		);
+
+-- 교육과정 인덱스
+CREATE INDEX IX_COURSES
+	ON COURSES( -- 교육과정
+		TITLE ASC -- 교육과정명
+	);
+
+-- 매니저
+CREATE TABLE MANAGERS (
+	MNO   INTEGER      NOT NULL COMMENT '매니저번호', -- 매니저번호
+	NAME  VARCHAR(100) NOT NULL COMMENT '이름', -- 이름
+	EMAIL VARCHAR(40)  NOT NULL COMMENT '이메일', -- 이메일
+	PWD   VARCHAR(20)  NOT NULL COMMENT '암호', -- 암호
+	TEL   VARCHAR(30)  NULL     COMMENT '전화', -- 전화
+	POS   VARCHAR(10)  NULL     COMMENT '직급' -- 직급
+)
+COMMENT '매니저';
+
+-- 매니저
+ALTER TABLE MANAGERS
+	ADD CONSTRAINT PK_MANAGERS -- 매니저 기본키
+		PRIMARY KEY (
+			MNO -- 매니저번호
+		);
+
+-- 매니저 유니크 인덱스
+CREATE UNIQUE INDEX UIX_MANAGERS
+	ON MANAGERS ( -- 매니저
+		EMAIL ASC -- 이메일
+	);
+
+-- 학생
+CREATE TABLE STUDENTS (
+	SNO      INTEGER      NOT NULL COMMENT '학생번호', -- 학생번호
+	NAME     VARCHAR(100) NOT NULL COMMENT '이름', -- 이름
+	EMAIL    VARCHAR(40)  NOT NULL COMMENT '이메일', -- 이메일
+	PWD      VARCHAR(20)  NOT NULL COMMENT '암호', -- 암호
+	TEL      VARCHAR(30)  NOT NULL COMMENT '전화', -- 전화
+	ANO      INTEGER      NULL     COMMENT '주소번호', -- 주소번호
+	DET_ADDR VARCHAR(255) NULL     COMMENT '상세주소', -- 상세주소
+	WORK     CHAR(1)      NOT NULL COMMENT '재직여부', -- 재직여부
+	LAS_SCH  VARCHAR(100) NULL     COMMENT '학력', -- 학력
+	MAJ      VARCHAR(100) NULL     COMMENT '전공' -- 전공
+)
+COMMENT '학생';
+
+-- 학생
+ALTER TABLE STUDENTS
+	ADD CONSTRAINT PK_STUDENTS -- 학생 기본키
+		PRIMARY KEY (
+			SNO -- 학생번호
+		);
+
+-- 학생 유니크 인덱스
+CREATE UNIQUE INDEX UIX_STUDENTS
+	ON STUDENTS ( -- 학생
+		EMAIL ASC -- 이메일
+	);
+
+-- 학생 인덱스
+CREATE INDEX IX_STUDENTS
+	ON STUDENTS( -- 학생
+		NAME ASC -- 이름
+	);
+
+-- 강사
+CREATE TABLE TEACHERS (
+	TNO   INTEGER      NOT NULL COMMENT '강사번호', -- 강사번호
+	NAME  VARCHAR(100) NOT NULL COMMENT '이름', -- 이름
+	EMAIL VARCHAR(40)  NOT NULL COMMENT '이메일', -- 이메일
+	PWD   VARCHAR(20)  NOT NULL COMMENT '암호', -- 암호
+	TEL   VARCHAR(30)  NULL     COMMENT '전화' -- 전화
+)
+COMMENT '강사';
+
+-- 강사
+ALTER TABLE TEACHERS
+	ADD CONSTRAINT PK_TEACHERS -- 강사 기본키
+		PRIMARY KEY (
+			TNO -- 강사번호
+		);
+
+-- 강사 유니크 인덱스
+CREATE UNIQUE INDEX UIX_TEACHERS
+	ON TEACHERS ( -- 강사
+		EMAIL ASC -- 이메일
+	);
+
+-- 강의과목
+CREATE TABLE SUBJECTS (
+	SUBNO INTEGER      NOT NULL COMMENT '강의과목번호', -- 강의과목번호
+	TITLE VARCHAR(255) NOT NULL COMMENT '과목명' -- 과목명
+)
+COMMENT '강의과목';
+
+-- 강의과목
+ALTER TABLE SUBJECTS
+	ADD CONSTRAINT PK_SUBJECTS -- 강의과목 기본키
+		PRIMARY KEY (
+			SUBNO -- 강의과목번호
+		);
+
+-- 강의과목 유니크 인덱스
+CREATE UNIQUE INDEX UIX_SUBJECTS
+	ON SUBJECTS ( -- 강의과목
+		TITLE ASC -- 과목명
+	);
+
+-- 학생사진
+CREATE TABLE STU_PHOT (
+	SPNO     INTEGER      NOT NULL COMMENT '학생사진번호', -- 학생사진번호
+	SNO      INTEGER      NOT NULL COMMENT '학생번호', -- 학생번호
+	FIL_PATH VARCHAR(255) NOT NULL COMMENT '사진경로' -- 사진경로
+)
+COMMENT '학생사진';
+
+-- 학생사진
+ALTER TABLE STU_PHOT
+	ADD CONSTRAINT PK_STU_PHOT -- 학생사진 기본키
+		PRIMARY KEY (
+			SPNO -- 학생사진번호
+		);
+
+-- 강사강의과목
+CREATE TABLE TEACH_SUB (
+	TNO   INTEGER NOT NULL COMMENT '강사번호', -- 강사번호
+	SUBNO INTEGER NOT NULL COMMENT '강의과목번호' -- 강의과목번호
+)
+COMMENT '강사강의과목';
+
+-- 강사강의과목
+ALTER TABLE TEACH_SUB
+	ADD CONSTRAINT PK_TEACH_SUB -- 강사강의과목 기본키
+		PRIMARY KEY (
+			TNO,   -- 강사번호
+			SUBNO  -- 강의과목번호
+		);
+
+-- 과정투입강사
+CREATE TABLE COUR_TEACH (
+	CNO INTEGER NOT NULL COMMENT '교육과정번호', -- 교육과정번호
+	TNO INTEGER NOT NULL COMMENT '강사번호' -- 강사번호
+)
+COMMENT '과정투입강사';
+
+-- 과정투입강사
+ALTER TABLE COUR_TEACH
+	ADD CONSTRAINT PK_COUR_TEACH -- 과정투입강사 기본키
+		PRIMARY KEY (
+			CNO, -- 교육과정번호
+			TNO  -- 강사번호
+		);
+
+-- 주소
+CREATE TABLE ADDRS (
+	ANO      INTEGER      NOT NULL COMMENT '주소번호', -- 주소번호
+	POSNO    VARCHAR(10)  NOT NULL COMMENT '우편번호', -- 우편번호
+	BAS_ADDR VARCHAR(255) NOT NULL COMMENT '기본주소' -- 기본주소
+)
+COMMENT '주소';
+
+-- 주소
+ALTER TABLE ADDRS
+	ADD CONSTRAINT PK_ADDRS -- 주소 기본키
+		PRIMARY KEY (
+			ANO -- 주소번호
+		);
+
+-- 강의실
+CREATE TABLE CLASSES (
+	CLNO  INTEGER      NOT NULL COMMENT '강의실번호', -- 강의실번호
+	TITLE VARCHAR(100) NOT NULL COMMENT '강의실명' -- 강의실명
+)
+COMMENT '강의실';
+
+-- 강의실
+ALTER TABLE CLASSES
+	ADD CONSTRAINT PK_CLASSES -- 강의실 기본키
+		PRIMARY KEY (
+			CLNO -- 강의실번호
+		);
+
+-- 강의실 유니크 인덱스
+CREATE UNIQUE INDEX UIX_CLASSES
+	ON CLASSES ( -- 강의실
+		TITLE ASC -- 강의실명
+	);
+
+-- 강의실사진
+CREATE TABLE CLAS_PHOT (
+	CLPNO    INTEGER      NOT NULL COMMENT '강의실사진번호', -- 강의실사진번호
+	CLNO     INTEGER      NOT NULL COMMENT '강의실번호', -- 강의실번호
+	FIL_PATH VARCHAR(255) NOT NULL COMMENT '사진경로' -- 사진경로
+)
+COMMENT '강의실사진';
+
+-- 강의실사진
+ALTER TABLE CLAS_PHOT
+	ADD CONSTRAINT PK_CLAS_PHOT -- 강의실사진 기본키
+		PRIMARY KEY (
+			CLPNO -- 강의실사진번호
+		);
+
+-- 수강신청
+ALTER TABLE COUR_SIGN
+	ADD CONSTRAINT FK_COURSES_TO_COUR_SIGN -- 교육과정 -> 수강신청
+		FOREIGN KEY (
+			CNO -- 교육과정번호
+		)
+		REFERENCES COURSES ( -- 교육과정
+			CNO -- 교육과정번호
+		);
+
+-- 수강신청
+ALTER TABLE COUR_SIGN
+	ADD CONSTRAINT FK_STUDENTS_TO_COUR_SIGN -- 학생 -> 수강신청
+		FOREIGN KEY (
+			SNO -- 학생번호
+		)
+		REFERENCES STUDENTS ( -- 학생
+			SNO -- 학생번호
+		);
+
+-- 교육과정
+ALTER TABLE COURSES
+	ADD CONSTRAINT FK_MANAGERS_TO_COURSES -- 매니저 -> 교육과정
+		FOREIGN KEY (
+			MNO -- 매니저번호
+		)
+		REFERENCES MANAGERS ( -- 매니저
+			MNO -- 매니저번호
+		);
+
+-- 교육과정
+ALTER TABLE COURSES
+	ADD CONSTRAINT FK_CLASSES_TO_COURSES -- 강의실 -> 교육과정
+		FOREIGN KEY (
+			CLNO -- 강의실번호
+		)
+		REFERENCES CLASSES ( -- 강의실
+			CLNO -- 강의실번호
+		);
+
+-- 학생
+ALTER TABLE STUDENTS
+	ADD CONSTRAINT FK_ADDRS_TO_STUDENTS -- 주소 -> 학생
+		FOREIGN KEY (
+			ANO -- 주소번호
+		)
+		REFERENCES ADDRS ( -- 주소
+			ANO -- 주소번호
+		);
+
+-- 학생사진
+ALTER TABLE STU_PHOT
+	ADD CONSTRAINT FK_STUDENTS_TO_STU_PHOT -- 학생 -> 학생사진
+		FOREIGN KEY (
+			SNO -- 학생번호
+		)
+		REFERENCES STUDENTS ( -- 학생
+			SNO -- 학생번호
+		);
+
+-- 강사강의과목
+ALTER TABLE TEACH_SUB
+	ADD CONSTRAINT FK_TEACHERS_TO_TEACH_SUB -- 강사 -> 강사강의과목
+		FOREIGN KEY (
+			TNO -- 강사번호
+		)
+		REFERENCES TEACHERS ( -- 강사
+			TNO -- 강사번호
+		);
+
+-- 강사강의과목
+ALTER TABLE TEACH_SUB
+	ADD CONSTRAINT FK_SUBJECTS_TO_TEACH_SUB -- 강의과목 -> 강사강의과목
+		FOREIGN KEY (
+			SUBNO -- 강의과목번호
+		)
+		REFERENCES SUBJECTS ( -- 강의과목
+			SUBNO -- 강의과목번호
+		);
+
+-- 과정투입강사
+ALTER TABLE COUR_TEACH
+	ADD CONSTRAINT FK_COURSES_TO_COUR_TEACH -- 교육과정 -> 과정투입강사
+		FOREIGN KEY (
+			CNO -- 교육과정번호
+		)
+		REFERENCES COURSES ( -- 교육과정
+			CNO -- 교육과정번호
+		);
+
+-- 과정투입강사
+ALTER TABLE COUR_TEACH
+	ADD CONSTRAINT FK_TEACHERS_TO_COUR_TEACH -- 강사 -> 과정투입강사
+		FOREIGN KEY (
+			TNO -- 강사번호
+		)
+		REFERENCES TEACHERS ( -- 강사
+			TNO -- 강사번호
+		);
+
+-- 강의실사진
+ALTER TABLE CLAS_PHOT
+	ADD CONSTRAINT FK_CLASSES_TO_CLAS_PHOT -- 강의실 -> 강의실사진
+		FOREIGN KEY (
+			CLNO -- 강의실번호
+		)
+		REFERENCES CLASSES ( -- 강의실
+			CLNO -- 강의실번호
+		);
